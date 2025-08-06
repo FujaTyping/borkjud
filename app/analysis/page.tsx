@@ -144,9 +144,15 @@ function APage() {
                                 exit={{ opacity: 0, scale: 0 }}
                                 className='absolute flex flex-col items-center'
                             >
+
                                 <Tooltip>
                                     <TooltipTrigger onClick={() => { setPart("ไหล่ช้าย"); setOpen(true) }} id='sdleft' className='absolute -translate-x-[90px] -translate-y-[280px] cursor-pointer'>
-                                        <CircleDot color='red' size={32} />
+                                        <motion.div
+                                            whileHover={{ scale: 1.2 }}
+                                            whileTap={{ scale: 0.8 }}
+                                        >
+                                            <CircleDot color='red' size={32} />
+                                        </motion.div>
                                     </TooltipTrigger>
                                     <TooltipContent>
                                         <p>ไหล่ช้าย</p>
@@ -154,7 +160,13 @@ function APage() {
                                 </Tooltip>
                                 <Tooltip>
                                     <TooltipTrigger onClick={() => { setPart("ไหล่ขวา"); setOpen(true) }} id='sdright' className='absolute translate-x-[90px] -translate-y-[280px] cursor-pointer'>
-                                        <CircleDot color='red' size={32} />
+                                        <motion.div
+                                            whileHover={{ scale: 1.2 }}
+                                            whileTap={{ scale: 0.8 }}
+                                        >
+                                            <CircleDot color='red' size={32} />
+                                        </motion.div>
+
                                     </TooltipTrigger>
                                     <TooltipContent>
                                         <p>ไหล่ขวา</p>
@@ -162,7 +174,13 @@ function APage() {
                                 </Tooltip>
                                 <Tooltip>
                                     <TooltipTrigger onClick={() => { setPart("แขนช้าย"); setOpen(true) }} id='left' className='absolute -translate-x-[125px] -translate-y-[125px] cursor-pointer'>
-                                        <CircleDot color='red' size={32} />
+                                        <motion.div
+                                            whileHover={{ scale: 1.2 }}
+                                            whileTap={{ scale: 0.8 }}
+                                        >
+                                            <CircleDot color='red' size={32} />
+                                        </motion.div>
+
                                     </TooltipTrigger>
                                     <TooltipContent>
                                         <p>แขนช้าย</p>
@@ -170,7 +188,13 @@ function APage() {
                                 </Tooltip>
                                 <Tooltip>
                                     <TooltipTrigger onClick={() => { setPart("แขนขวา"); setOpen(true) }} id='left' className='absolute translate-x-[125px] -translate-y-[125px] cursor-pointer'>
-                                        <CircleDot color='red' size={32} />
+                                        <motion.div
+                                            whileHover={{ scale: 1.2 }}
+                                            whileTap={{ scale: 0.8 }}
+                                        >
+                                            <CircleDot color='red' size={32} />
+                                        </motion.div>
+
                                     </TooltipTrigger>
                                     <TooltipContent>
                                         <p>แขนขวา</p>
@@ -178,7 +202,13 @@ function APage() {
                                 </Tooltip>
                                 <Tooltip>
                                     <TooltipTrigger onClick={() => { setPart("คอ"); setOpen(true) }} id='neck' className='absolute -translate-y-[370px] cursor-pointer'>
-                                        <CircleDot color='red' size={32} />
+                                        <motion.div
+                                            whileHover={{ scale: 1.2 }}
+                                            whileTap={{ scale: 0.8 }}
+                                        >
+                                            <CircleDot color='red' size={32} />
+                                        </motion.div>
+
                                     </TooltipTrigger>
                                     <TooltipContent>
                                         <p>คอ</p>
@@ -186,7 +216,14 @@ function APage() {
                                 </Tooltip>
                                 <Tooltip>
                                     <TooltipTrigger onClick={() => { setPart("หลัง"); setOpen(true) }} id='left' className='absolute -translate-y-[250px] cursor-pointer'>
-                                        <CircleDot color='red' size={32} />
+                                        <motion.div
+                                            whileHover={{ scale: 1.2 }}
+                                            whileTap={{ scale: 0.8 }}
+                                        >
+                                            <CircleDot color='red' size={32} />
+                                        </motion.div>
+
+
                                     </TooltipTrigger>
                                     <TooltipContent>
                                         <p>หลัง</p>
@@ -194,7 +231,13 @@ function APage() {
                                 </Tooltip>
                                 <Tooltip>
                                     <TooltipTrigger onClick={() => { setPart("ขาขวา"); setOpen(true) }} id='left' className='absolute translate-y-[250px] translate-x-[80px] cursor-pointer'>
-                                        <CircleDot color='red' size={32} />
+                                        <motion.div
+                                            whileHover={{ scale: 1.2 }}
+                                            whileTap={{ scale: 0.8 }}
+                                        >
+                                            <CircleDot color='red' size={32} />
+                                        </motion.div>
+
                                     </TooltipTrigger>
                                     <TooltipContent>
                                         <p>ขาขวา</p>
@@ -202,7 +245,13 @@ function APage() {
                                 </Tooltip>
                                 <Tooltip>
                                     <TooltipTrigger onClick={() => { setPart("ขาช้าย"); setOpen(true) }} id='left' className='absolute translate-y-[250px] -translate-x-[70px] cursor-pointer'>
-                                        <CircleDot color='red' size={32} />
+                                        <motion.div
+                                            whileHover={{ scale: 1.2 }}
+                                            whileTap={{ scale: 0.8 }}
+                                        >
+                                            <CircleDot color='red' size={32} />
+                                        </motion.div>
+
                                     </TooltipTrigger>
                                     <TooltipContent>
                                         <p>ขาช้าย</p>
@@ -229,7 +278,7 @@ function APage() {
                         }
                     </div>
                 </section>
-            </main>
+            </main >
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent>
                     <DialogHeader>

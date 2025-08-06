@@ -45,7 +45,7 @@ export default function Navbar() {
 
     return (
         <nav className="bg-[#f4c692] border-b-6 border-[#f3b46b]">
-            <div className="max-w-6xl mx-auto px-4">
+            <div className="max-w-7xl mx-auto px-4">
                 <div className="flex justify-between h-16">
                     <Link className="flex items-center gap-3" href={"/"}>
                         <img src={Icon.src} alt='Icon' className='w-8' />

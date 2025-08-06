@@ -7,7 +7,7 @@ import db from '@/lib/firebase_db';
 import auth from '@/lib/firebase_auth'
 import { useRouter } from 'next/navigation'
 import axios from 'axios'
-import { Database, LogOut, TicketPlus, X } from 'lucide-react'
+import { Database, Loader, LogOut, TicketPlus, X } from 'lucide-react'
 
 import { format } from "date-fns"
 import { Calendar as CalendarIcon } from "lucide-react"
@@ -45,8 +45,6 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import { set } from 'zod';
-import { hi } from 'date-fns/locale';
 
 interface AdminHistoryItem extends HistoryItem {
     userId: string;
@@ -65,8 +63,13 @@ export default function UserProfile() {
     const [adminHistory, setAdminHistory] = useState<AdminHistoryItem[]>([]);
     const router = useRouter()
     const [open, setOpen] = useState(false);
+    const [isDelete, setIsDelete] = useState(false);
     const [hID, setHID] = useState("");
     const [date, setDate] = useState<Date>()
+    const [dID, setDID] = useState("");
+    const [adminActionUserId, setAdminActionUserId] = useState<string | undefined>();
+    const [dloading, setDLoading] = useState(false);
+    const [uuid, setUuid] = useState('');
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -111,6 +114,7 @@ export default function UserProfile() {
     const handleDeleteHistory = async (historyId: string, userId?: string) => {
         if (!user) return;
 
+        setDLoading(true);
         try {
             if (isAdmin) {
                 const response = await fetch('/api/bookmark', {
@@ -140,6 +144,9 @@ export default function UserProfile() {
             }
         } catch (error) {
             console.error('Error handling history:', error);
+        } finally {
+            setDLoading(false);
+            setIsDelete(false);
         }
     };
 
@@ -164,9 +171,13 @@ export default function UserProfile() {
                                     <p className="text-sm font-bold">Schedule: {item.scheduleTime || 'Not scheduled'}</p>
                                     <Tooltip>
                                         <TooltipTrigger
-                                            onClick={() => handleDeleteHistory(item.id, item.userId)}
+                                            onClick={() => {
+                                                setDID(item.id);
+                                                setAdminActionUserId(item.userId);
+                                                setIsDelete(true);
+                                            }}
                                             className="text-red-500 hover:text-red-700 cursor-pointer"
-                                            aria-label="Delete history"
+                                            aria-label="Cancel booking"
                                         ><X /></TooltipTrigger>
                                         <TooltipContent>
                                             <p>ยกเลิกการจอง</p>
@@ -305,7 +316,11 @@ export default function UserProfile() {
                                                 </>}
                                                 <Tooltip>
                                                     <TooltipTrigger
-                                                        onClick={() => handleDeleteHistory(item.id)}
+                                                        onClick={() => {
+                                                            setDID(item.id);
+                                                            setAdminActionUserId(undefined);
+                                                            setIsDelete(true);
+                                                        }}
                                                         className="text-red-500 hover:text-red-700 cursor-pointer"
                                                         aria-label="Delete history"
                                                     >
@@ -365,6 +380,22 @@ export default function UserProfile() {
                             </PopoverContent>
                         </Popover>
                         <Button onClick={submitBooking} type="submit" className='w-full bg-[#f4c692] mt-2 text-black hover:bg-[#f4c692] cursor-pointer'>จองเลย</Button>
+                    </DialogHeader>
+                </DialogContent>
+            </Dialog>
+            <Dialog open={isDelete} onOpenChange={setIsDelete}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle className='text-2xl'>
+                            {isAdmin ? 'ต้องการที่จะยกเลิกการจองนี้?' : 'ต้องการที่จะลบประวัตินี้?'}
+                        </DialogTitle>
+                        <p>
+                            ของไอดี {dID}
+                        </p>
+                        <Button onClick={() => handleDeleteHistory(dID, adminActionUserId)} type="submit" className='w-full bg-[#f4c692] mt-2 text-black hover:bg-[#f4c692] cursor-pointer'>
+                            {dloading && <Loader className='animate-spin' />}
+                            {isAdmin ? 'ยืนยันการยกเลิก' : 'ยืนยันการลบ'}
+                        </Button>
                     </DialogHeader>
                 </DialogContent>
             </Dialog>

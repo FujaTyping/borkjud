@@ -52,23 +52,24 @@ export default function Navbar() {
                         <span className="text-xl font-semibold">BorkJud</span>
                     </Link>
                     <div className="flex items-center">
-                        {user ? (
-                            <img
-                                src={user.photoURL}
-                                alt={user.displayName}
-                                className="w-10 h-10 rounded-full cursor-pointer"
-                                onClick={() => router.push('/user')}
-                            />
-                        ) : (
-                            <button
-                                onClick={handleGoogleLogin}
-                                disabled={loading}
-                                className="bg-[#703c00] text-white px-4 flex items-center gap-3 py-2 rounded-md"
-                            >
-                                {loading ? <Loader className='animate-spin' /> : <KeyRound />}
-                                Login
-                            </button>
-                        )}
+                        {user ?
+                            <Link href={`/user`}>
+                                <img
+                                    src={user.photoURL}
+                                    alt={user.displayName}
+                                    className="w-10 h-10 rounded-full cursor-pointer"
+                                />
+                            </Link>
+                            : (
+                                <button
+                                    onClick={handleGoogleLogin}
+                                    disabled={loading}
+                                    className="bg-[#703c00] text-white px-4 flex items-center gap-3 py-2 rounded-md"
+                                >
+                                    {loading ? <Loader className='animate-spin' /> : <KeyRound />}
+                                    Login
+                                </button>
+                            )}
                     </div>
                 </div>
             </div>

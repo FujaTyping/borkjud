@@ -8,6 +8,7 @@ import auth from '@/lib/firebase_auth'
 import { useRouter } from 'next/navigation'
 import axios from 'axios'
 import { Database, Loader, LogOut, TicketPlus, X } from 'lucide-react'
+import { motion } from 'motion/react'
 
 import { format } from "date-fns"
 import { Calendar as CalendarIcon } from "lucide-react"
@@ -55,7 +56,33 @@ interface AdminHistoryItem extends HistoryItem {
     lastUpdated: string;
 }
 
+import { Input } from "@/components/ui/input"
 const emojinig = ['😊', '😢', '😡', '😑', '😱', '😨', '😲', '😴', '😝', '😍', '😌', '😐', '😷', '😳', '😵', '💔', '😎', '😭', '😅', '😉', '💜', '😇']
+const emojitext = [
+    "ยิ้มไว้นะ ทุกอย่างจะดีขึ้น",
+    "เสียใจได้ แต่อย่าลืมว่าเธอเข้มแข็งมากนะ",
+    "ใจเย็นๆ นะ สูดหายใจลึกๆ แล้วค่อยๆ แก้ไข",
+    "แม้จะรู้สึกเฉยๆ ก็ไม่เป็นไร พักใจบ้างก็ได้",
+    "ไม่ต้องกลัวนะ เธอไม่ได้อยู่คนเดียว",
+    "แม้จะกังวล แต่ทุกอย่างจะผ่านไปได้แน่นอน",
+    "ตกใจได้ แต่อย่าปล่อยให้มันหยุดเธอนะ",
+    "พักผ่อนเยอะๆ แล้วพรุ่งนี้ค่อยลุยใหม่",
+    "สนุกกับชีวิตแบบนี้ต่อไปนะ!",
+    "เธอมีคุณค่าและเป็นที่รักเสมอ",
+    "ใช้เวลาอยู่กับตัวเองบ้างนะ สบายใจดี",
+    "บางวันก็แค่ต้องผ่านไปให้ได้",
+    "ดูแลสุขภาพดีๆ หายไวๆ นะ",
+    "เขินแค่ไหน ก็ยังน่ารักอยู่นะ",
+    "มึนได้ แต่อย่าลืมพักนะ",
+    "แม้หัวใจจะเจ็บ แต่เธอจะผ่านมันไปได้",
+    "เธอเจ๋งมาก อย่าลืมความเก่งของตัวเอง",
+    "ร้องไห้ได้ แต่อย่าหยุดเดินต่อนะ",
+    "เหนื่อยได้ แต่อย่าลืมหายใจลึกๆ แล้วไปต่อ",
+    "แค่เธอยิ้ม โลกก็สดใสแล้ว",
+    "ขอส่งพลังบวกให้เต็มที่เลย",
+    "เธอเป็นคนดี อย่าหยุดเชื่อนะ"
+];
+
 
 export default function UserProfile() {
     const [user, setUser] = useState<any>(null)
@@ -71,7 +98,7 @@ export default function UserProfile() {
     const [dID, setDID] = useState("");
     const [adminActionUserId, setAdminActionUserId] = useState<string | undefined>();
     const [dloading, setDLoading] = useState(false);
-    const [emo, setEmo] = useState('');
+    const [emo, setEmo] = useState(0);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -97,7 +124,7 @@ export default function UserProfile() {
                             const emo = await axios.post('/api/emoji', {
                                 text: data[0].symptom
                             });
-                            setEmo(emojinig[parseInt(emo.data)])
+                            setEmo(parseInt(emo.data))
                         }
                     }
                 } catch (error) {
@@ -200,7 +227,7 @@ export default function UserProfile() {
                                     <p className="text-sm text-gray-600">ระดับความปวด: {item.hurt}</p>
                                 </div>
                             </div>
-                            <p className="text-sm mt-2">{item.response}</p>
+                            <p className="text-sm mt-2 whitespace-pre-line">{item.response}</p>
                             <p className="text-xs text-gray-400 mt-2">
                                 {new Date(item.lastUpdated).toLocaleString('th-TH')}
                             </p>
@@ -237,6 +264,10 @@ export default function UserProfile() {
             const data = await response2.json();
             setHistory(data);
             setDLoading(false);
+            await axios.post('/api/lineOA', {
+                "name": user.displayName,
+                "date": date ? format(date, "PPP") : null
+            })
         } catch (error) {
             console.error('Error booking appointment:', error);
         }
@@ -258,7 +289,7 @@ export default function UserProfile() {
     return (
         <div className="max-w-7xl mx-auto flex flex-col items-center justify-center py-2">
             <div className="p-8">
-                <div className='flex flex-col md:gap-32 md:flex-row md:items-center place-content-between'>
+                <div className='flex flex-col md:gap-32 md:flex-row md:items-start place-content-between bg-[#f6bf80] rounded-xl p-6 mb-7'>
                     <div>
                         {user.photoURL && (
                             <div className="mb-4">
@@ -274,27 +305,47 @@ export default function UserProfile() {
                         <h1 className="text-2xl font-bold mb-1">{user.displayName}</h1>
                         <p className="text-gray-600 mb-4">{user.email}</p>
                     </div>
-                    <button
-                        onClick={handleLogout}
-                        className="bg-red-500 flex flex-row md:flex-col items-center justify-center gap-1 text-white px-4 py-2 rounded-md w-full md:w-fit mb-4"
-                    >
-                        <LogOut />
-                        Logout
-                    </button>
+                    <div className='flex items-end justify-end'>
+                        <Tooltip>
+                            <TooltipTrigger
+                                className=""
+                                aria-label="ID history"
+                            >
+                                <LogOut
+                                    onClick={handleLogout}
+                                    color='red'
+                                    className='cursor-pointer'
+                                    size={28}
+                                />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>ออกจากระบบ</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </div>
                 </div>
 
 
                 {isAdmin ? renderAdminDashboard() : (
                     <>
-                        {emo && history.length > 0 && (
-                            <section className="w-full max-w-4xl mb-8 text-center p-6 bg-amber-100 dark:bg-gray-800 rounded-xl shadow-sm">
-                                <h2 className="text-xl font-semibold text-amber-800 dark:text-amber-200">อีโมจิสำหรับอาการล่าสุดของคุณ</h2>
-                                <p className="text-6xl mt-6 animate-bounce">{emo}</p>
-                                <p className="mt-2 text-gray-600 dark:text-gray-400">
+                        {emo && history.length > 0 ? <>
+                            <section className="w-full max-w-4xl mb-8 text-center p-6 bg-[#f4c692] rounded-xl shadow-sm">
+                                <h2 className="text-xl font-semibold text-amber-800">{emojitext[emo]}</h2>
+                                <motion.p
+                                    className="text-6xl py-3"
+                                    animate={{
+                                        scale: [1, 1.1, 1, 1.1, 1],
+                                    }}
+                                    transition={{
+                                        duration: 2,
+                                        repeat: Infinity,
+                                        repeatType: "loop",
+                                    }}>{emojinig[emo]}</motion.p>
+                                <p className="mt-2">
                                     จากอาการ: "{history[0].symptom}"
                                 </p>
                             </section>
-                        )}
+                        </> : <></>}
 
                         <div className='flex flex-col gap-6 w-full max-w-4xl'>
                             {

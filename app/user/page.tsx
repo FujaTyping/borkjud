@@ -55,6 +55,8 @@ interface AdminHistoryItem extends HistoryItem {
     lastUpdated: string;
 }
 
+const emojinig = ['😊', '😢', '😡', '😑', '😱', '😨', '😲', '😴', '😝', '😍', '😌', '😐', '😷', '😳', '😵', '💔', '😎', '😭', '😅', '😉', '💜', '😇']
+
 export default function UserProfile() {
     const [user, setUser] = useState<any>(null)
     const [loading, setLoading] = useState(true)
@@ -69,7 +71,7 @@ export default function UserProfile() {
     const [dID, setDID] = useState("");
     const [adminActionUserId, setAdminActionUserId] = useState<string | undefined>();
     const [dloading, setDLoading] = useState(false);
-    const [uuid, setUuid] = useState('');
+    const [emo, setEmo] = useState('');
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -91,6 +93,12 @@ export default function UserProfile() {
                         const response = await fetch(`/api/history?userid=${user.uid}`);
                         const data = await response.json();
                         setHistory(data);
+                        if (data.length > 0) {
+                            const emo = await axios.post('/api/emoji', {
+                                text: data[0].symptom
+                            });
+                            setEmo(emojinig[parseInt(emo.data)])
+                        }
                     }
                 } catch (error) {
                     console.error("Error fetching data:", error);
@@ -276,84 +284,96 @@ export default function UserProfile() {
 
 
                 {isAdmin ? renderAdminDashboard() : (
-                    <div className='flex flex-col gap-6'>
-                        {
-                            history.length === 0 ? <>
-                                <div className='w-full mt-16 flex flex-col items-center justify-center'>
-                                    <Database size={32} />
-                                    <p className='mt-1'>ไม่มีข้อมูลในประวัติของคุณ</p>
-                                </div>
-                            </> : <>
-                                {history.map((item) => (
-                                    <div key={item.id} className="border p-4 rounded-lg relative">
-                                        <div className="font-medium flex items-center place-content-between">ตำแหน่ง: {item.where}
-                                            <div className='flex items-center gap-2'>
-                                                {item.booked ? <>
-                                                    <Tooltip>
-                                                        <TooltipTrigger
-                                                            className=""
-                                                            aria-label="ID history"
-                                                        >
-                                                            <TicketPlus color='green' size={20} />
-                                                        </TooltipTrigger>
-                                                        <TooltipContent>
-                                                            <p>จองวันที่ : {item.scheduleTime}</p>
-                                                        </TooltipContent>
-                                                    </Tooltip>
-                                                </> : <>
-                                                    <Tooltip>
-                                                        <TooltipTrigger
-                                                            onClick={() => { setOpen(true); setHID(item.id); }}
-                                                            className="cursor-pointer"
-                                                            aria-label="ID history"
-                                                        >
-                                                            <TicketPlus size={20} />
-                                                        </TooltipTrigger>
-                                                        <TooltipContent>
-                                                            <p>จองคิว</p>
-                                                        </TooltipContent>
-                                                    </Tooltip>
-                                                </>}
-                                                <Tooltip>
-                                                    <TooltipTrigger
-                                                        onClick={() => {
-                                                            setDID(item.id);
-                                                            setAdminActionUserId(undefined);
-                                                            setIsDelete(true);
-                                                        }}
-                                                        className="text-red-500 hover:text-red-700 cursor-pointer"
-                                                        aria-label="Delete history"
-                                                    >
-                                                        <svg
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            className="h-5 w-5"
-                                                            viewBox="0 0 20 20"
-                                                            fill="currentColor"
-                                                        >
-                                                            <path
-                                                                fillRule="evenodd"
-                                                                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                                                clipRule="evenodd"
-                                                            />
-                                                        </svg>
-                                                    </TooltipTrigger>
-                                                    <TooltipContent>
-                                                        <p>ลบประวัติ</p>
-                                                    </TooltipContent>
-                                                </Tooltip>
-                                            </div>
-                                        </div>
-                                        <p className="text-sm text-gray-600">อาการ: {item.symptom}</p>
-                                        <p className="text-sm text-gray-600">ระดับความปวด: {item.hurt}</p>
-                                        <p className="text-sm mt-2 whitespace-pre-line">{item.response}</p>
-                                        <p className="text-xs text-gray-400 mt-2">
-                                            {new Date(item.createdAt).toLocaleString('th-TH')}
-                                        </p>
+                    <>
+                        {emo && history.length > 0 && (
+                            <section className="w-full max-w-4xl mb-8 text-center p-6 bg-amber-100 dark:bg-gray-800 rounded-xl shadow-sm">
+                                <h2 className="text-xl font-semibold text-amber-800 dark:text-amber-200">อีโมจิสำหรับอาการล่าสุดของคุณ</h2>
+                                <p className="text-6xl mt-6 animate-bounce">{emo}</p>
+                                <p className="mt-2 text-gray-600 dark:text-gray-400">
+                                    จากอาการ: "{history[0].symptom}"
+                                </p>
+                            </section>
+                        )}
+
+                        <div className='flex flex-col gap-6 w-full max-w-4xl'>
+                            {
+                                history.length === 0 ? <>
+                                    <div className='w-full mt-16 flex flex-col items-center justify-center'>
+                                        <Database size={32} />
+                                        <p className='mt-1'>ไม่มีข้อมูลในประวัติของคุณ</p>
                                     </div>
-                                ))}
-                            </>
-                        }
-                    </div>
+                                </> : <>
+                                    {history.map((item) => (
+                                        <div key={item.id} className="border p-4 rounded-lg relative">
+                                            <div className="font-medium flex items-center place-content-between">ตำแหน่ง: {item.where}
+                                                <div className='flex items-center gap-2'>
+                                                    {item.booked ? <>
+                                                        <Tooltip>
+                                                            <TooltipTrigger
+                                                                className=""
+                                                                aria-label="ID history"
+                                                            >
+                                                                <TicketPlus color='green' size={20} />
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                <p>จองวันที่ : {item.scheduleTime}</p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    </> : <>
+                                                        <Tooltip>
+                                                            <TooltipTrigger
+                                                                onClick={() => { setOpen(true); setHID(item.id); }}
+                                                                className="cursor-pointer"
+                                                                aria-label="ID history"
+                                                            >
+                                                                <TicketPlus size={20} />
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                <p>จองคิว</p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    </>}
+                                                    <Tooltip>
+                                                        <TooltipTrigger
+                                                            onClick={() => {
+                                                                setDID(item.id);
+                                                                setAdminActionUserId(undefined);
+                                                                setIsDelete(true);
+                                                            }}
+                                                            className="text-red-500 hover:text-red-700 cursor-pointer"
+                                                            aria-label="Delete history"
+                                                        >
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                className="h-5 w-5"
+                                                                viewBox="0 0 20 20"
+                                                                fill="currentColor"
+                                                            >
+                                                                <path
+                                                                    fillRule="evenodd"
+                                                                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                                                    clipRule="evenodd"
+                                                                />
+                                                            </svg>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>
+                                                            <p>ลบประวัติ</p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                </div>
+                                            </div>
+                                            <p className="text-sm text-gray-600">อาการ: {item.symptom}</p>
+                                            <p className="text-sm text-gray-600">ระดับความปวด: {item.hurt}</p>
+                                            <p className="text-sm mt-2 whitespace-pre-line">{item.response}</p>
+                                            <p className="text-xs text-gray-400 mt-2">
+                                                {new Date(item.createdAt).toLocaleString('th-TH')}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </>
+                            }
+                        </div>
+                    </>
                 )}
             </div>
             <Dialog open={open} onOpenChange={setOpen}>

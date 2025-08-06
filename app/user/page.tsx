@@ -214,6 +214,7 @@ export default function UserProfile() {
     const submitBooking = async () => {
         if (!user || !date || !hID) return;
 
+        setDLoading(true);
         try {
             const response = await fetch('/api/bookmark', {
                 method: 'PATCH',
@@ -235,7 +236,7 @@ export default function UserProfile() {
             const response2 = await fetch(`/api/history?userid=${user.uid}`);
             const data = await response2.json();
             setHistory(data);
-
+            setDLoading(false);
         } catch (error) {
             console.error('Error booking appointment:', error);
         }
@@ -399,7 +400,7 @@ export default function UserProfile() {
                                 <Calendar mode="single" selected={date} onSelect={setDate} />
                             </PopoverContent>
                         </Popover>
-                        <Button onClick={submitBooking} type="submit" className='w-full bg-[#f4c692] mt-2 text-black hover:bg-[#f4c692] cursor-pointer'>จองเลย</Button>
+                        <Button onClick={submitBooking} type="submit" className='w-full bg-[#f4c692] mt-2 text-black hover:bg-[#f4c692] cursor-pointer'>{dloading && <Loader className='animate-spin' />} จองเลย</Button>
                     </DialogHeader>
                 </DialogContent>
             </Dialog>

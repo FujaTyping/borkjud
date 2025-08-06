@@ -99,6 +99,7 @@ export default function UserProfile() {
     const [adminActionUserId, setAdminActionUserId] = useState<string | undefined>();
     const [dloading, setDLoading] = useState(false);
     const [emo, setEmo] = useState(0);
+    const [time, setTime] = useState("10:30:00");
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -239,10 +240,16 @@ export default function UserProfile() {
     );
 
     const submitBooking = async () => {
-        if (!user || !date || !hID) return;
+        if (!user || !date || !hID || !time) return;
 
         setDLoading(true);
         try {
+            const [hours, minutes, seconds] = time.split(':').map(Number);
+            const scheduleDateTime = new Date(date);
+            scheduleDateTime.setHours(hours);
+            scheduleDateTime.setMinutes(minutes);
+            scheduleDateTime.setSeconds(seconds || 0);
+
             const response = await fetch('/api/bookmark', {
                 method: 'PATCH',
                 headers: {
@@ -251,7 +258,7 @@ export default function UserProfile() {
                 body: JSON.stringify({
                     userid: user.uid,
                     historyid: hID,
-                    scheduleTime: format(date, "PPP")
+                    scheduleTime: format(scheduleDateTime, "PPP")
                 })
             });
 
@@ -266,7 +273,7 @@ export default function UserProfile() {
             setDLoading(false);
             await axios.post('/api/lineOA', {
                 "name": user.displayName,
-                "date": date ? format(date, "PPP") : null
+                "date": scheduleDateTime ? format(scheduleDateTime, "PPP p") : null
             })
         } catch (error) {
             console.error('Error booking appointment:', error);
@@ -451,6 +458,13 @@ export default function UserProfile() {
                                 <Calendar mode="single" selected={date} onSelect={setDate} />
                             </PopoverContent>
                         </Popover>
+                        <p className='mt-2'>เวลาจองคิว</p>
+                        <Input
+                            type="time" id="time-picker" step="1"
+                            value={time}
+                            onChange={(e) => setTime(e.target.value)}
+                            className="bg-background"
+                        />
                         <Button onClick={submitBooking} type="submit" className='w-full bg-[#f4c692] mt-2 text-black hover:bg-[#f4c692] cursor-pointer'>{dloading && <Loader className='animate-spin' />} จองเลย</Button>
                     </DialogHeader>
                 </DialogContent>

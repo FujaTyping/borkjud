@@ -10,7 +10,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "Text is required" }, { status: 400 });
         }
 
-        const apiKey = '9ik8LlUaSnuH75GfLLKp8QLyuIgQWRPU';
+        const apiKey = '';
 
         const externalApiResponse = await axios.post(
             'https://api.aiforthai.in.th/vaja',

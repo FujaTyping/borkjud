@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
     const { text } = await req.json();
-    const apikey = '9ik8LlUaSnuH75GfLLKp8QLyuIgQWRPU';
+    const apikey = '';
 
     if (!text) {
         return NextResponse.json({ error: 'Missing text parameter' }, { status: 400 });

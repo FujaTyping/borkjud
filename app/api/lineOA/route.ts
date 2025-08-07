@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const CHANNEL_ACCESS_TOKEN = 'sY0VKj/jJV/zEf51LbRZwbU1AfLETGqzv9cFtNdHebmKiAG8XBEVi5a5A4M2BgnUMFjKLv5Qlopc2IBKORu5ZMUHYUIq7/eUBPEoNEsVI5Ply/RWZn3HHPEXMCTsDIJx3czBGxxmHqpJ6Am3beVcJgdB04t89/1O/w1cDnyilFU='; // Replace with your token
+const CHANNEL_ACCESS_TOKEN = ''; // Replace with your token
 
 export async function POST(req: NextRequest) {
     const { name, date } = await req.json();
@@ -126,7 +126,7 @@ export async function POST(req: NextRequest) {
                 'Authorization': `Bearer ${CHANNEL_ACCESS_TOKEN}`
             },
             body: JSON.stringify({
-                to: "U17be193bcd4dd77b54a0337e420c4a82",
+                to: "",
                 messages
             })
         });
